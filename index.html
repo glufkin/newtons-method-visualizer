@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Newton's Method Visualizer</title>
+  <meta name="description" content="An interactive, step-by-step picture of Newton's Method for finding roots, with multiple starting guesses and a look at how fast it converges.">
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script defer src="vendor/math.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Newton's Method Visualizer</h1>
+    <a href="#how" class="toplink">How it works ↓</a>
+  </header>
+
+  <main id="app" class="app">
+    <aside class="panel" aria-label="Controls">
+      <div class="expr-row">
+        <div class="gutter"><span class="swatch" style="background:#2d70b3"></span></div>
+        <div class="expr-body col">
+          <label class="fx"><span class="lhs">f(x) =</span>
+            <input id="f-input" type="text" spellcheck="false" autocomplete="off" aria-label="Function f(x)">
+          </label>
+          <div id="f-error" class="error" role="alert"></div>
+          <div id="fprime" class="fprime" aria-label="Derivative"></div>
+        </div>
+      </div>
+
+      <div class="section-label">Starting guesses</div>
+      <div id="guess-list"></div>
+      <button id="add-guess" class="link-btn">+ Add starting guess</button>
+
+      <div class="controls">
+        <button id="reset" title="Back to the starting guesses">⟲ Reset</button>
+        <button id="back" title="Previous step (← key)">◀ Back</button>
+        <button id="step" class="primary" title="Next step (→ key)">Step ▶</button>
+        <button id="run">▶ Run</button>
+      </div>
+      <div id="step-count" class="step-count"></div>
+
+      <div class="formula">\[x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}\]</div>
+
+      <label class="select-label">Examples
+        <select id="preset"></select>
+      </label>
+
+      <label class="check"><input type="checkbox" id="basins"> Show basins of attraction</label>
+      <p id="basin-note" class="note" hidden>Each starting point x₀ is colored (in the background and in the strip along the bottom) by the root Newton's Method eventually reaches from there. The small dots on the axis mark the roots. Gray means it never settles on a root.</p>
+
+      <p class="note hint">Drag a large dot to move a starting guess. Double-click the graph to add one. Drag to pan, and scroll or pinch to zoom.</p>
+    </aside>
+
+    <div class="graph-wrap">
+      <canvas id="graph" aria-label="Graph of f(x) with Newton's Method tangent lines"></canvas>
+      <div class="zoom">
+        <button id="zoom-in" aria-label="Zoom in">+</button>
+        <button id="zoom-out" aria-label="Zoom out">−</button>
+        <button id="zoom-home" aria-label="Default view">⌂</button>
+      </div>
+    </div>
+  </main>
+
+  <section class="iterations" aria-label="Iterations">
+    <div id="tabs" class="tabs" role="tablist"></div>
+    <p id="status" class="status"></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>n</th><th>x<sub>n</sub> <span class="th-note">(<span class="ok">matches the root</span>)</span></th><th>f(x<sub>n</sub>)</th><th>f′(x<sub>n</sub>)</th><th>correct digits</th></tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <article id="how" class="explain">
+    <h2>The idea</h2>
+    <p>
+      We want a number \(r\) where \(f(r) = 0\): a <em>root</em> of \(f\). Solving the equation
+      exactly is often impossible, so Newton's Method does something simpler. Start with a guess
+      \(x_0\). Near that guess, the curve looks almost like its <strong>tangent line</strong>,
+      and finding where a line crosses the x-axis is easy. Use that crossing point as the next guess, and repeat.
+    </p>
+    <p>The tangent line at \(x_n\) is</p>
+    \[ y = f(x_n) + f'(x_n)\,(x - x_n). \]
+    <p>Setting \(y = 0\) and solving for \(x\) gives the next guess:</p>
+    \[ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}. \]
+    <p>
+      In the graph above, each step draws a dashed line up from the current guess to the curve. It then draws the tangent line there
+      and follows it down to the x-axis, where the next guess lands.
+    </p>
+
+    <h2>How fast does it converge?</h2>
+    <p>
+      When Newton's Method works, it works <em>remarkably</em> fast. Take \(f(x) = x^2 - 2\), whose positive
+      root is \(\sqrt2 = 1.41421356237309\ldots\), and start at \(x_0 = 1\):
+    </p>
+    <div class="table-wrap narrow">
+      <table class="static">
+        <thead><tr><th>n</th><th>x<sub>n</sub></th><th>correct digits</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td class="mono">1</td><td>0</td></tr>
+          <tr><td>1</td><td class="mono"><span class="ok">1.</span>5</td><td>1</td></tr>
+          <tr><td>2</td><td class="mono"><span class="ok">1.41</span>6666666666667</td><td>2</td></tr>
+          <tr><td>3</td><td class="mono"><span class="ok">1.41421</span>5686274510</td><td>5</td></tr>
+          <tr><td>4</td><td class="mono"><span class="ok">1.41421356237</span>4690</td><td>11</td></tr>
+          <tr><td>5</td><td class="mono"><span class="ok">1.414213562373095</span></td><td>all</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The number of correct digits roughly <strong>doubles</strong> with each step. This is called
+      <strong>quadratic convergence</strong>. If \(e_n = x_n - r\) is the error after step \(n\), then
+    </p>
+    \[ e_{n+1} \approx \frac{f''(r)}{2f'(r)}\, e_n^{\,2}. \]
+    <p>
+      Squaring a small number makes it much smaller. An error of \(10^{-3}\) becomes about \(10^{-6}\), then \(10^{-12}\).
+      By comparison, the bisection method (repeatedly halving an interval that contains the root) gains only about one
+      digit every 3.3 steps. Watch the <em>correct digits</em> column in the table above as you step through.
+    </p>
+    <details>
+      <summary>Why the error gets squared</summary>
+      <p>
+        Expand \(f\) around the current guess using Taylor's theorem, and evaluate it at the root \(r\):
+      </p>
+      \[ 0 = f(r) = f(x_n) + f'(x_n)(r - x_n) + \tfrac12 f''(\xi)(r - x_n)^2 \]
+      <p>
+        for some \(\xi\) between \(x_n\) and \(r\). Divide by \(f'(x_n)\) and use the definition of \(x_{n+1}\):
+      </p>
+      \[ x_{n+1} - r = \frac{f''(\xi)}{2f'(x_n)}\,(x_n - r)^2. \]
+      <p>
+        The tangent line is exactly the first two terms of the Taylor series. The only error comes from the
+        curvature term, which is proportional to the <em>square</em> of the distance from the root.
+      </p>
+    </details>
+    <p>For this fast convergence you need:</p>
+    <ul>
+      <li>\(f'(r) \ne 0\): the curve crosses the axis at an angle instead of just touching it,</li>
+      <li>\(f\) is smooth (twice differentiable) near the root, and</li>
+      <li>the starting guess is close enough to the root.</li>
+    </ul>
+
+    <h2>When it slows down: repeated roots</h2>
+    <p>
+      If the curve only <em>touches</em> the x-axis, as \(f(x) = (x-1)^2\) does at \(x = 1\), then \(f'(r) = 0\) and the
+      squaring no longer happens. For a root of multiplicity \(m\), each step only shrinks the error by a fixed factor:
+    </p>
+    \[ e_{n+1} \approx \left(1 - \tfrac1m\right) e_n. \]
+    <p>
+      For \((x-1)^2\), the error is cut in half each step. This is <strong>linear convergence</strong>, about 3.3 steps per digit,
+      so it takes about 50 steps to get what \(x^2-2\) got in 5. If you know \(m\), the modified step
+      \(x_{n+1} = x_n - m\,f(x_n)/f'(x_n)\) restores quadratic convergence.
+    </p>
+    <p><button class="try" data-preset="repeated">Try it: (x − 1)²</button></p>
+
+    <h2>When it fails</h2>
+    <p>Newton's Method promises nothing if you start too far from a root. Some things that can go wrong:</p>
+    <dl>
+      <dt>A flat tangent</dt>
+      <dd>
+        If \(f'(x_n) = 0\), the tangent is horizontal and never meets the x-axis. If \(f'(x_n)\) is only
+        <em>close</em> to zero, the next guess shoots far away, possibly to a different root than the one you wanted. With
+        \(f(x) = \cos x\), starting at \(0.1\) jumps out to the root near \(3.5\pi\).
+        <br><button class="try" data-preset="cos">Try it: cos(x)</button>
+      </dd>
+      <dt>Cycles</dt>
+      <dd>
+        For \(f(x) = x^3 - 2x + 2\) starting at \(x_0 = 0\), the guesses go \(0 \to 1 \to 0 \to 1 \to \cdots\) forever,
+        even though there is a real root near \(-1.77\).
+        <br><button class="try" data-preset="cycle">Try it: x³ − 2x + 2</button>
+      </dd>
+      <dt>Divergence</dt>
+      <dd>
+        For \(f(x) = \sqrt[3]{x}\), the formula simplifies to \(x_{n+1} = -2x_n\). Every step lands twice as far from the
+        root at 0 as the step before, no matter where you start. The curve is so steep near the root that each tangent overshoots.
+        <br><button class="try" data-preset="cbrt">Try it: ∛x</button>
+      </dd>
+      <dt>Overshooting</dt>
+      <dd>
+        With \(f(x) = \arctan x\), a start at \(x_0 = 1\) converges to 0, but \(x_0 = 1.5\) bounces back and forth with growing
+        size and diverges. The cutoff is near \(x_0 \approx 1.3917\).
+        <br><button class="try" data-preset="atan">Try it: arctan(x)</button>
+      </dd>
+      <dt>Surprising destinations</dt>
+      <dd>
+        When there are several roots, the root you reach can depend on your starting point in complicated ways. For
+        \(f(x) = x^3 - x\) (roots \(-1, 0, 1\)), starting at \(0.5\) lands on \(-1\), not on the nearer roots \(0\) or \(1\).
+        Turn on <em>Show basins of attraction</em> to color every starting point by where it ends up. Near \(x \approx \pm0.447\),
+        the colors alternate faster and faster.
+        <br><button class="try" data-preset="cubic">Try it: x³ − x</button>
+      </dd>
+    </dl>
+
+    <h2>Using this page</h2>
+    <ul>
+      <li>Type any function of \(x\), such as <code>x^3 - 2x - 5</code>, <code>e^x - 3</code>, <code>sin(x) - x/2</code>, or <code>ln(x) - 1</code>. The derivative is computed for you.</li>
+      <li>Use <code>cbrt(x)</code> for a cube root. Fractional powers like <code>x^(1/3)</code> also work for negative \(x\).</li>
+      <li>Add up to seven starting guesses to compare their paths. Click a guess's tab to see its table.</li>
+      <li>The address bar updates as you go, so you can copy the link to share a particular setup.</li>
+    </ul>
+  </article>
+
+  <footer class="footer">
+    Built with <a href="https://mathjs.org">math.js</a> and <a href="https://katex.org">KaTeX</a>.
+  </footer>
+</body>
+</html>
