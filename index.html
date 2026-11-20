@@ -71,7 +71,7 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>n</th><th>x<sub>n</sub> <span class="th-note">(<span class="ok">matches the root</span>)</span></th><th>f(x<sub>n</sub>)</th><th>f′(x<sub>n</sub>)</th><th title="The correction added to xₙ to get xₙ₊₁">−f(x<sub>n</sub>)/f′(x<sub>n</sub>)</th><th>correct digits</th></tr>
+          <tr><th>n</th><th>x<sub>n</sub> <span class="th-note">(<span class="ok">accurate digits</span>)</span></th><th>f(x<sub>n</sub>)</th><th>f′(x<sub>n</sub>)</th><th title="The correction added to xₙ to get xₙ₊₁">−f(x<sub>n</sub>)/f′(x<sub>n</sub>)</th><th title="r is the root this guess converges to">error |x<sub>n</sub> − r|</th><th title="−log₁₀ of the error: about how many decimal places are correct">decimal places</th></tr>
         </thead>
         <tbody id="table-body"></tbody>
       </table>
@@ -102,26 +102,32 @@
     </p>
     <div class="table-wrap narrow">
       <table class="static">
-        <thead><tr><th>n</th><th>x<sub>n</sub></th><th>correct digits</th></tr></thead>
+        <thead><tr><th>n</th><th>x<sub>n</sub></th><th>error |x<sub>n</sub> − √2|</th><th>decimal places</th></tr></thead>
         <tbody>
-          <tr><td>0</td><td class="mono">1</td><td>0</td></tr>
-          <tr><td>1</td><td class="mono"><span class="ok">1.</span>5</td><td>1</td></tr>
-          <tr><td>2</td><td class="mono"><span class="ok">1.41</span>6666666666667</td><td>2</td></tr>
-          <tr><td>3</td><td class="mono"><span class="ok">1.41421</span>5686274510</td><td>5</td></tr>
-          <tr><td>4</td><td class="mono"><span class="ok">1.41421356237</span>4690</td><td>11</td></tr>
-          <tr><td>5</td><td class="mono"><span class="ok">1.414213562373095</span></td><td>all</td></tr>
+          <tr><td>0</td><td class="mono"><span class="ok">1</span></td><td class="mono">0.414</td><td>0.4</td></tr>
+          <tr><td>1</td><td class="mono"><span class="ok">1.5</span></td><td class="mono">0.0858</td><td>1.1</td></tr>
+          <tr><td>2</td><td class="mono"><span class="ok">1.41</span>6666666666667</td><td class="mono">0.00245</td><td>2.6</td></tr>
+          <tr><td>3</td><td class="mono"><span class="ok">1.41421</span>5686274510</td><td class="mono">0.00000212</td><td>5.7</td></tr>
+          <tr><td>4</td><td class="mono"><span class="ok">1.41421356237</span>4690</td><td class="mono">0.00000000000159</td><td>11.8</td></tr>
+          <tr><td>5</td><td class="mono"><span class="ok">1.414213562373095</span></td><td class="mono">0</td><td>exact*</td></tr>
         </tbody>
       </table>
     </div>
+    <p class="note-small">
+      “Decimal places” is \(-\log_{10}|x_n - r|\): an error of 0.001 means about 3 correct decimal places.
+      Green marks the digits in decimal places larger than the error.
+      *Exact to the 16 digits a computer stores.
+    </p>
     <p>
-      The number of correct digits roughly <strong>doubles</strong> with each step. This is called
+      Each error is roughly proportional to the <em>square</em> of the one before it, so the number of correct decimal places roughly
+      <strong>doubles</strong> with each step. This is called
       <strong>quadratic convergence</strong>. If \(e_n = x_n - r\) is the error after step \(n\), then
     </p>
     \[ e_{n+1} \approx \frac{f''(r)}{2f'(r)}\, e_n^{\,2}. \]
     <p>
       Squaring a small number makes it much smaller. An error of \(10^{-3}\) becomes about \(10^{-6}\), then \(10^{-12}\).
       By comparison, the bisection method (repeatedly halving an interval that contains the root) gains only about one
-      digit every 3.3 steps. Watch the <em>correct digits</em> column in the table above as you step through.
+      digit every 3.3 steps. Watch the <em>error</em> and <em>decimal places</em> columns in the table above as you step through.
     </p>
     <details>
       <summary>Why the error gets squared</summary>

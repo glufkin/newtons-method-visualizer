@@ -388,21 +388,24 @@ const STATUS_TEXT = {
   none: () => '',
 };
 
-function digitsCorrect(x, r) {
-  const err = Math.abs(x - r);
-  if (err === 0) return 16;
-  return Math.max(0, Math.min(16, Math.floor(-Math.log10(err / Math.max(1, Math.abs(r))))));
-}
+// Decimal places of accuracy: -log10 |x - r|  (Infinity when exact)
+const decimalsOf = (err) => (err === 0 ? Infinity : -Math.log10(err));
 
-function highlightDigits(x, r) {
+// Highlight the leading digits whose place value exceeds the error,
+// so the green part agrees with the "decimal places" column.
+function highlightDigits(x, err) {
+  const pretty = (u) => u.replace(/-/g, '−');
   const s = x.toPrecision(16);
-  if (r === null || /e/.test(s)) return fmtNum(x, 16);
-  const t = r.toPrecision(16);
-  let i = 0;
-  while (i < s.length && s[i] === t[i]) i++;
-  if (!/[1-9]/.test(s.slice(0, i))) i = 0; // need at least one matching significant digit
-  const pretty = (u) => u.replace('-', '−');
-  return `<span class="ok">${pretty(s.slice(0, i))}</span>${pretty(s.slice(i))}`;
+  if (err === null || /e/.test(s)) return fmtNum(x, 16);
+  const dot = s.includes('.') ? s.indexOf('.') : s.length;
+  let cut = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] < '0' || s[i] > '9') continue;
+    const place = i < dot ? dot - i - 1 : dot - i; // power of ten for this digit
+    if (err === 0 || Math.pow(10, place) > err * (1 + 1e-9)) cut = i + 1; // tolerance: r itself is only accurate to ~1e-16
+    else break;
+  }
+  return `<span class="ok">${pretty(s.slice(0, cut))}</span>${pretty(s.slice(cut))}`;
 }
 
 function renderTable() {
@@ -433,12 +436,14 @@ function renderTable() {
   for (let n = 0; n <= k; n++) {
     const x = xs[n];
     const fx = f(x), dfx = df(x);
-    let dcell = '<td class="na">—</td>';
-    if (r !== null) {
-      const d = digitsCorrect(x, r);
-      dcell = `<td class="digits"><span class="bar" style="width:${(d / 16) * 100}%;background:${q.color}"></span><span class="num">${d === 16 ? 'all' : d}</span></td>`;
+    const err = r === null ? null : Math.abs(x - r);
+    let ecell = '<td class="na">—</td>', dcell = '<td class="na">—</td>';
+    if (err !== null) {
+      const d = decimalsOf(err);
+      ecell = `<td class="mono">${fmtNum(err, 3)}</td>`;
+      dcell = `<td class="digits"><span class="num">${d === Infinity ? "exact" : Math.max(0, d).toFixed(1)}</span><span class="bar" style="width:${(Math.max(0, Math.min(d, 16)) / 16) * 120}px;background:${q.color}"></span></td>`;
     }
-    rows.push(`<tr><td>${n}</td><td class="mono">${highlightDigits(x, r)}</td><td class="mono">${fmtNum(fx, 4)}</td><td class="mono">${fmtNum(dfx, 4)}</td><td class="mono">${dfx === 0 ? 'undefined' : fmtNum(-fx / dfx, 4)}</td>${dcell}</tr>`);
+    rows.push(`<tr><td>${n}</td><td class="mono">${highlightDigits(x, err)}</td><td class="mono">${fmtNum(fx, 4)}</td><td class="mono">${fmtNum(dfx, 4)}</td><td class="mono">${dfx === 0 ? 'undefined' : fmtNum(-fx / dfx, 4)}</td>${ecell}${dcell}</tr>`);
   }
   body.innerHTML = rows.join('');
   const done = state.shown >= stepsFor(q.run);

@@ -178,9 +178,9 @@ th { font-weight: 600; color: #444; border-bottom: 2px solid var(--line); }
 td.mono, .mono { font-family: var(--mono); }
 .ok { background: var(--ok-bg); color: var(--ok-ink); border-radius: 3px; }
 td.na { color: #aaa; }
-td.digits { position: relative; min-width: 160px; }
-td.digits .bar { position: absolute; left: 10px; top: 9px; bottom: 9px; max-width: calc(100% - 50px); border-radius: 3px; opacity: 0.35; }
-td.digits .num { position: relative; padding-left: 4px; }
+td.digits { min-width: 190px; }
+td.digits .num { display: inline-block; width: 3.2em; }
+td.digits .bar { display: inline-block; height: 10px; vertical-align: middle; border-radius: 3px; opacity: 0.45; }
 
 /* ---- explanation ---- */
 .explain { max-width: 760px; margin: 0 auto; padding: 8px 16px 40px; font-size: 17px; }
@@ -203,3 +203,4 @@ summary { cursor: pointer; font-weight: 600; }
   .formula, .hint { display: none; }
   .explain { font-size: 16px; }
 }
+.note-small { font-size: 14px; color: var(--muted); }
