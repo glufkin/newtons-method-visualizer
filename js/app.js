@@ -14,7 +14,8 @@ export const PRESETS = {
   cubic: { label: 'Three roots — which one wins?', expr: 'x^3 - x', guesses: [2, 0.5, -0.2], view: [-2.5, 2.5, -2, 2] },
   repeated: { label: 'Repeated root — slow convergence', expr: '(x - 1)^2', guesses: [3], view: [-1, 4, -1, 4] },
   cos: { label: 'Nearly flat tangent — a long jump', expr: 'cos(x)', guesses: [1, 0.1, 0], view: [-4, 13, -3, 3] },
-  cycle: { label: 'Stuck in a cycle', expr: 'x^3 - 2x + 2', guesses: [0, -2], view: [-3, 3, -2, 5] },
+  cycle: { label: 'Stuck in a 2-cycle', expr: 'x^3 - 2x + 2', guesses: [0, -2], view: [-3, 3, -2, 5] },
+  cycle3: { label: 'Stuck in a 3-cycle', expr: 'x^3 - 1.8x + 3.6', guesses: [0, 0.5], view: [-3, 3.5, -2, 9] },
   cbrt: { label: 'Cube root — diverges', expr: 'cbrt(x)', guesses: [1], view: [-10, 10, -4, 4] },
   atan: { label: 'arctan — overshoots', expr: 'atan(x)', guesses: [1, 1.5], view: [-6, 6, -2.5, 2.5] },
 };

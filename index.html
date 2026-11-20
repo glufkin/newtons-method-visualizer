@@ -179,6 +179,11 @@
         For \(f(x) = x^3 - 2x + 2\) starting at \(x_0 = 0\), the guesses go \(0 \to 1 \to 0 \to 1 \to \cdots\) forever,
         even though there is a real root near \(-1.77\).
         <br><button class="try" data-preset="cycle">Try it: x³ − 2x + 2</button>
+        <br><br>Cycles can be longer. For \(f(x) = x^3 - 1.8x + 3.6\) starting at \(x_0 = 0\), the guesses settle into a
+        3-cycle, visiting roughly \(2 \to 1.22 \to 0 \to 2 \to \cdots\). Rounding errors can't knock them out of it, because the cycle
+        <em>attracts</em> nearby guesses. A start of \(x_0 = 0.5\) circles near the cycle for 30 steps before it
+        escapes to the real root near \(-1.918\).
+        <br><button class="try" data-preset="cycle3">Try it: x³ − 1.8x + 3.6</button>
       </dd>
       <dt>Divergence</dt>
       <dd>
