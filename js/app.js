@@ -438,7 +438,7 @@ function renderTable() {
       const d = digitsCorrect(x, r);
       dcell = `<td class="digits"><span class="bar" style="width:${(d / 16) * 100}%;background:${q.color}"></span><span class="num">${d === 16 ? 'all' : d}</span></td>`;
     }
-    rows.push(`<tr><td>${n}</td><td class="mono">${highlightDigits(x, r)}</td><td class="mono">${fmtNum(fx, 4)}</td><td class="mono">${fmtNum(dfx, 4)}</td>${dcell}</tr>`);
+    rows.push(`<tr><td>${n}</td><td class="mono">${highlightDigits(x, r)}</td><td class="mono">${fmtNum(fx, 4)}</td><td class="mono">${fmtNum(dfx, 4)}</td><td class="mono">${dfx === 0 ? 'undefined' : fmtNum(-fx / dfx, 4)}</td>${dcell}</tr>`);
   }
   body.innerHTML = rows.join('');
   const done = state.shown >= stepsFor(q.run);

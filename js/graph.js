@@ -36,7 +36,7 @@ export function fmtNum(v, digits = 4) {
   let s;
   if (a >= 1e-4 && a < 1e7) s = String(+v.toPrecision(digits));
   else s = v.toExponential(digits - 1).replace(/\.?0+e/, 'e');
-  return s.replace('-', MINUS);
+  return s.replace(/-/g, MINUS);
 }
 
 export class Graph {
